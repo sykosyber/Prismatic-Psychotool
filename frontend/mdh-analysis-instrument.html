@@ -36,8 +36,10 @@
             font-weight: 300;
             letter-spacing: 3px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
+            -webkit-background-clip: text; /* For Safari/Chrome */
+            background-clip: text;         /* The standard property for compatibility */
             -webkit-text-fill-color: transparent;
+            color: transparent;            /* A fallback for browsers that need it */
             margin-bottom: 10px;
         }
         
@@ -311,8 +313,10 @@
             font-size: 2em;
             margin-bottom: 10px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
+            -webkit-background-clip: text; /* For Safari/Chrome */
+            background-clip: text;         /* The standard property for compatibility */
             -webkit-text-fill-color: transparent;
+            color: transparent;            /* A fallback for browsers that need it */
         }
         
         .report-timestamp {
