@@ -5,7 +5,7 @@
 
 A web-based instrument for multi-dimensional analysis of human behavior and psychology. This tool uses OpenAI's GPT-4o to process text through a variety of selectable academic and theoretical lenses, providing deep, structured insights.
 
-![Psychotool Screenshot](https://imgur.com/a/eCFDFDH.png)
+![Psychotool Screenshot](https://i.imgur.com/oWhYlsz.png)
 
 ## Features
 
@@ -45,7 +45,7 @@ Follow these steps to get the project running on your local machine.
     ```
 
 3.  **Create and Activate a Virtual Environment**
-    This keeps your project dependencies isolated.
+    
     ```bash
     # Create the environment
     python -m venv .venv
@@ -82,7 +82,7 @@ Follow these steps to get the project running on your local machine.
     The backend server will start and be available at `http://127.0.0.1:5000`.
 
 2.  **Launch the Frontend**
-    Navigate to the `frontend` directory and open the `mdh-analysis-instrument.html` file directly in your web browser (e.g., by double-clicking it).
+    Navigate to the `frontend` directory and open the `mdh-analysis-instrument.html` file directly in your web browser (e.g., by double-clicking it), or by selecting 'Open with Live Server' via the Ritwick Dey Live Server Extension.
 
 3.  **Run an Analysis**
     - Paste the text you want to analyze into the input box.
