@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Dimensional Human Analysis Software Instrument</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            font-weight: 300;
+            letter-spacing: 3px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+            letter-spacing: 1px;
+        }
+        
+        .config-section {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .config-title {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            color: #999;
+        }
+        
+        .api-config {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .api-input {
+            flex: 1;
+            min-width: 300px;
+            background: #1a1a1a;
+            border: 1px solid #444;
+            border-radius: 5px;
+            padding: 10px;
+            color: #e0e0e0;
+            font-size: 0.95em;
+        }
+        
+        .api-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+        }
+        
+        .api-status {
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+        
+        .api-status.connected {
+            background: #1a3a1a;
+            color: #4ade80;
+            border: 1px solid #22c55e;
+        }
+        
+        .api-status.disconnected {
+            background: #3a1a1a;
+            color: #f87171;
+            border: 1px solid #ef4444;
+        }
+        
+        .input-section {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .input-label {
+            display: block;
+            margin-bottom: 10px;
+            color: #999;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        #userInput {
+            width: 100%;
+            min-height: 200px;
+            background: #1a1a1a;
+            border: 1px solid #444;
+            border-radius: 5px;
+            padding: 15px;
+            color: #e0e0e0;
+            font-size: 1em;
+            resize: vertical;
+            font-family: inherit;
+        }
+        
+        #userInput:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+        }
+        
+        .lens-selection {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .lens-category {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 25px;
+        }
+        
+        .category-title {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            color: #667eea;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .category-icon {
+            font-size: 1.5em;
+        }
+        
+        .lens-group {
+            margin-bottom: 20px;
+        }
+        
+        .lens-group-title {
+            font-size: 0.85em;
+            color: #777;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .lens-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 8px;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+        
+        .lens-item:hover {
+            background: #222;
+            border-color: #444;
+            transform: translateX(5px);
+        }
+        
+        .lens-item.selected {
+            background: #2a2a3a;
+            border-color: #667eea;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+        }
+        
+        .lens-checkbox {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            cursor: pointer;
+        }
+        
+        .lens-name {
+            flex: 1;
+            font-size: 0.95em;
+        }
+        
+        .lens-info {
+            font-size: 0.8em;
+            color: #666;
+            cursor: help;
+            padding: 5px;
+        }
+        
+        .dropdown-arrow {
+            margin-left: 5px;
+            transition: transform 0.3s ease;
+            display: inline-block;
+        }
+        
+        .dropdown-arrow.open {
+            transform: rotate(180deg);
+        }
+        
+        .sublens-container {
+            margin-left: 40px;
+            margin-top: 10px;
+            padding-left: 20px;
+            border-left: 2px solid #333;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .sublens-container.active {
+            max-height: 500px;
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 40px 0;
+        }
+        
+        .analyze-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 50px;
+            font-size: 1.1em;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        .analyze-btn:active {
+            transform: translateY(0);
+        }
+        
+        .analyze-btn.loading {
+            background: #444;
+            cursor: not-allowed;
+        }
+        
+        .integration-option {
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .results-section {
+            margin-top: 40px;
+            display: none;
+        }
+        
+        .results-section.active {
+            display: block;
+        }
+        
+        .report-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-radius: 10px;
+            border: 1px solid #333;
+        }
+        
+        .report-title {
+            font-size: 2em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .report-timestamp {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .analysis-output {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .analysis-output::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, #667eea, #764ba2);
+        }
+        
+        .analysis-title {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #667eea;
+        }
+        
+        .analysis-content {
+            line-height: 1.8;
+            color: #ccc;
+        }
+        
+        .analysis-content p {
+            margin-bottom: 15px;
+        }
+        
+        .analysis-content h3 {
+            color: #999;
+            margin: 20px 0 10px 0;
+            font-size: 1.1em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .loading-overlay.active {
+            display: flex;
+        }
+        
+        .loading-container {
+            text-align: center;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 3px solid #333;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        .loading-text {
+            color: #999;
+            font-size: 1.1em;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .tooltip {
+            position: absolute;
+            background: #222;
+            border: 1px solid #444;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.85em;
+            max-width: 300px;
+            display: none;
+            z-index: 100;
+        }
+        
+        .error-message {
+            background: #3a1a1a;
+            border: 1px solid #ef4444;
+            color: #f87171;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            .lens-selection {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .analyze-btn {
+                padding: 12px 30px;
+                font-size: 1em;
+            }
+            
+            .api-config {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .api-input {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>SYBER PRISMATIC PSYCHOTOOL</h1>
+            <p class="subtitle">Multi-Dimensional Human Analysis Software Instrument</p>
+        </header>
+        
+     
+        <div class="input-section">
+            <label class="input-label" for="userInput">Input Text for Analysis</label>
+            <textarea id="userInput" placeholder="Enter the text you want to analyze. This can be a case study, personal reflection, description of a social event, or any text describing human behavior, thoughts, or interactions..."></textarea>
+        </div>
+        
+        <div class="lens-selection">
+            <div class="lens-category">
+                <h2 class="category-title">
+                    <span class="category-icon">🔍</span>
+                    Behavior Analysis Lenses
+                </h2>
+                
+                <div class="lens-group">
+                    <div class="lens-group-title">Surface Lenses</div>
+                    <div class="lens-item" data-lens="cultural" data-category="behavior">
+                        <input type="checkbox" class="lens-checkbox" id="cultural">
+                        <label class="lens-name" for="cultural">Cultural Lens</label>
+                        <span class="lens-info" title="Analyzes shared beliefs, values, customs, and collective narratives">ℹ️</span>
+                    </div>
+                    <div class="lens-item" data-lens="economic" data-category="behavior">
+                        <input type="checkbox" class="lens-checkbox" id="economic">
+                        <label class="lens-name" for="economic">Economic Lens</label>
+                        <span class="lens-info" title="Examines resource allocation, capital flow, and systems of distribution">ℹ️</span>
+                    </div>
+                    <div class="lens-item" data-lens="religious" data-category="behavior">
+                        <input type="checkbox" class="lens-checkbox" id="religious">
+                        <label class="lens-name" for="religious">Religious/Spiritual Lens</label>
+                        <span class="lens-info" title="Focuses on faith, rituals, moral codes, and transcendent aspirations">ℹ️</span>
+                    </div>
+                    <div class="lens-item" data-lens="social" data-category="behavior">
+                        <input type="checkbox" class="lens-checkbox" id="social">
+                        <label class="lens-name" for="social">Social Lens</label>
+                        <span class="lens-info" title="Analyzes group dynamics, power relationships, and social structures">ℹ️</span>
+                    </div>
+                    <div class="lens-item" data-lens="technological" data-category="behavior">
+                        <input type="checkbox" class="lens-checkbox" id="technological">
+                        <label class="lens-name" for="technological">Technological Lens</label>
+                        <span class="lens-info" title="Examines technological influences and human-tool interactions">ℹ️</span>
+                    </div>
+                </div>
+                
+                <div class="lens-group">
+                    <div class="lens-group-title">Beneath the Surface</div>
+                    <div class="lens-item" data-lens="archetypal" data-category="behavior">
+                        <input type="checkbox" class="lens-checkbox" id="archetypal">
+                        <label class="lens-name" for="archetypal">Archetypal/Mythological</label>
+                        <span class="lens-info" title="Identifies universal symbolic patterns and primal narratives">ℹ️</span>
+                    </div>
+                    <div class="lens-item" data-lens="ecological" data-category="behavior">
+                        <input type="checkbox" class="lens-checkbox" id="ecological">
+                        <label class="lens-name" for="ecological">Ecological/Systems Dynamics</label>
+                        <span class="lens-info" title="Analyzes complex feedback loops and emergent properties">ℹ️</span>
+                    </div>
+                    <div class="lens-item" data-lens="mathematical" data-category="behavior">
+                        <input type="checkbox" class="lens-checkbox" id="mathematical">
+                        <label class="lens-name" for="mathematical">Pure Configurational/Mathematical</label>
+                        <span class="lens-info" title="Identifies mathematical principles and structural patterns">ℹ️</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="lens-category">
+                <h2 class="category-title">
+                    <span class="category-icon">🧠</span>
+                    Profile Analysis Lenses
+                </h2>
+                
+                <div class="lens-group">
+                    <div class="lens-item" data-lens="functionalism" data-category="profile">
+                        <input type="checkbox" class="lens-checkbox" id="functionalism">
+                        <label class="lens-name" for="functionalism">Functionalism</label>
+                        <span class="lens-info" title="Analyzes mental states by their adaptive purposes">ℹ️</span>
+                    </div>
+                    <div class="lens-item" data-lens="gestalt" data-category="profile">
+                        <input type="checkbox" class="lens-checkbox" id="gestalt">
+                        <label class="lens-name" for="gestalt">Gestalt Psychology</label>
+                        <span class="lens-info" title="Emphasizes holistic patterns and perceptual organization">ℹ️</span>
+                    </div>
+                    <div class="lens-item" data-lens="psychoanalysis" data-category="profile" data-has-sublenses="true">
+                        <input type="checkbox" class="lens-checkbox" id="psychoanalysis">
+                        <label class="lens-name" for="psychoanalysis">Psychoanalysis <span class="dropdown-arrow" id="psychoanalysis-arrow">▼</span></label>
+                        <span class="lens-info" title="Explores unconscious drives and defense mechanisms">ℹ️</span>
+                    </div>
+                    <div class="sublens-container" id="psychoanalysis-sublenses">
+                        <div class="lens-item" data-lens="jungian" data-category="profile" data-parent="psychoanalysis">
+                            <input type="checkbox" class="lens-checkbox" id="jungian">
+                            <label class="lens-name" for="jungian">Jungian</label>
+                        </div>
+                        <div class="lens-item" data-lens="adlerian" data-category="profile" data-parent="psychoanalysis">
+                            <input type="checkbox" class="lens-checkbox" id="adlerian">
+                            <label class="lens-name" for="adlerian">Adlerian</label>
+                        </div>
+                        <div class="lens-item" data-lens="lacanian" data-category="profile" data-parent="psychoanalysis">
+                            <input type="checkbox" class="lens-checkbox" id="lacanian">
+                            <label class="lens-name" for="lacanian">Lacanian</label>
+                        </div>
+                        <div class="lens-item" data-lens="object-relations" data-category="profile" data-parent="psychoanalysis">
+                            <input type="checkbox" class="lens-checkbox" id="object-relations">
+                            <label class="lens-name" for="object-relations">Object Relations</label>
+                        </div>
+                        <div class="lens-item" data-lens="self-psychology" data-category="profile" data-parent="psychoanalysis">
+                            <input type="checkbox" class="lens-checkbox" id="self-psychology">
+                            <label class="lens-name" for="self-psychology">Self Psychology</label>
+                        </div>
+                        <div class="lens-item" data-lens="relational" data-category="profile" data-parent="psychoanalysis">
+                            <input type="checkbox" class="lens-checkbox" id="relational">
+                            <label class="lens-name" for="relational">Relational</label>
+                        </div>
+                    </div>
+                    <div class="lens-item" data-lens="behaviorism" data-category="profile">
+                        <input type="checkbox" class="lens-checkbox" id="behaviorism">
+                        <label class="lens-name" for="behaviorism">Behaviorism</label>
+                        <span class="lens-info" title="Focuses on observable responses to environmental stimuli">ℹ️</span>
+                    </div>
+                    <div class="lens-item" data-lens="humanistic" data-category="profile">
+                        <input type="checkbox" class="lens-checkbox" id="humanistic">
+                        <label class="lens-name" for="humanistic">Humanistic Psychology</label>
+                        <span class="lens-info" title="Emphasizes self-actualization and inherent potential">ℹ️</span>
+                    </div>
+                    <div class="lens-item" data-lens="cognitivism" data-category="profile">
+                        <input type="checkbox" class="lens-checkbox" id="cognitivism">
+                        <label class="lens-name" for="cognitivism">Cognitivism</label>
+                        <span class="lens-info" title="Analyzes information processing and mental operations">ℹ️</span>
+                    </div>
+                </div>
+                
+                <div class="lens-group">
+                    <div class="lens-group-title">Cross-Cutting Lenses</div>
+                    <div class="lens-item" data-lens="girard" data-category="profile">
+                        <input type="checkbox" class="lens-checkbox" id="girard">
+                        <label class="lens-name" for="girard">Girard (Mimetics)</label>
+                        <span class="lens-info" title="Analyzes mimetic desire and scapegoating mechanisms">ℹ️</span>
+                    </div>
+                    <div class="lens-item" data-lens="heidegger" data-category="profile">
+                        <input type="checkbox" class="lens-checkbox" id="heidegger">
+                        <label class="lens-name" for="heidegger">Heidegger (Dasein)</label>
+                        <span class="lens-info" title="Examines Being-in-the-World and existential structures">ℹ️</span>
+                    </div>
+                    <div class="lens-item" data-lens="foucault" data-category="profile">
+                        <input type="checkbox" class="lens-checkbox" id="foucault">
+                        <label class="lens-name" for="foucault">Foucault (Epistemes & Power)</label>
+                        <span class="lens-info" title="Analyzes knowledge-power relationships and subjectification">ℹ️</span>
+                    </div>
+                    <div class="lens-item" data-lens="bateson" data-category="profile">
+                        <input type="checkbox" class="lens-checkbox" id="bateson">
+                        <label class="lens-name" for="bateson">Bateson (Ecological Mind)</label>
+                        <span class="lens-info" title="Examines systemic patterns and levels of learning">ℹ️</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="analyze-btn" id="analyzeBtn">Analyze</button>
+            <div class="integration-option">
+                <input type="checkbox" id="integrationCheckbox">
+                <label for="integrationCheckbox">Include Integrative Synthesis</label>
+            </div>
+        </div>
+        
+        <div class="results-section" id="resultsSection">
+            <div class="report-header">
+                <h2 class="report-title">Syber Prismatic Psychotool Analysis Report</h2>
+                <p class="report-timestamp" id="timestamp"></p>
+            </div>
+            <div id="analysisResults"></div>
+        </div>
+    </div>
+    
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-container">
+            <div class="loading-spinner"></div>
+            <div class="loading-text" id="loadingText">Analyzing through selected lenses...</div>
+        </div>
+    </div>
+    
+    <div class="tooltip" id="tooltip"></div>
+
+   <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- CONFIGURATION ---
+            const API_BASE_URL = 'http://127.0.0.1:5000';
+
+            // --- DOM ELEMENTS ---
+            const userInputEl = document.getElementById('userInput');
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            const integrationCheckbox = document.getElementById('integrationCheckbox');
+            const resultsSection = document.getElementById('resultsSection');
+            const analysisResultsContainer = document.getElementById('analysisResults');
+            const timestampEl = document.getElementById('timestamp');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const tooltip = document.getElementById('tooltip');
+
+            // --- INITIALIZATION ---
+            setupEventListeners();
+            setupTooltips();
+            
+            const prefilledText = localStorage.getItem('psychotoolInput');
+            if (prefilledText) {
+                userInputEl.value = prefilledText;
+                localStorage.removeItem('psychotoolInput');
+            }
+
+            // --- PRIMARY SETUP FUNCTION ---
+            function setupEventListeners() {
+                // Analyze button
+                analyzeBtn.addEventListener('click', performAnalysis);
+
+                // Lens selection handling
+                document.querySelectorAll('.lens-item').forEach(item => {
+                    item.addEventListener('click', function(e) {
+                        if (e.target.classList.contains('lens-info')) {
+                            return; // Ignore clicks on the info icon
+                        }
+                        const checkbox = this.querySelector('.lens-checkbox');
+                        if (e.target !== checkbox && e.target.tagName !== 'LABEL') {
+                            checkbox.checked = !checkbox.checked;
+                        }
+                        updateLensStyleAndState(checkbox);
+                    });
+                });
+            }
+
+            // --- CORE LOGIC ---
+            async function performAnalysis() {
+                const userInput = userInputEl.value.trim();
+                if (!userInput) {
+                    alert('Please enter text to analyze.');
+                    return;
+                }
+
+                const selectedLenses = getSelectedLenses();
+                if (selectedLenses.length === 0) {
+                    alert('Please select at least one lens for analysis.');
+                    return;
+                }
+
+                const includeIntegration = integrationCheckbox.checked;
+                showLoading();
+
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/analyze`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            userInput: userInput,
+                            selectedLenses: selectedLenses,
+                            includeIntegration: includeIntegration
+                        })
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({ error: response.statusText }));
+                        throw new Error(`API request failed: ${errorData.error || response.statusText}`);
+                    }
+
+                    const results = await response.json();
+                    renderResults(userInput, results);
+
+                } catch (error) {
+                    console.error('Analysis failed:', error);
+                    showError('Analysis failed: ' + error.message);
+                } finally {
+                    hideLoading();
+                }
+            }
+
+            function getSelectedLenses() {
+                const selected = [];
+                document.querySelectorAll('.lens-checkbox:checked').forEach(checkbox => {
+                    const lensItem = checkbox.closest('.lens-item');
+                    const lensId = lensItem.dataset.lens;
+                    
+                    // Skip parent 'psychoanalysis' if any of its children are checked
+                    if (lensId === 'psychoanalysis' && document.querySelector('[data-parent="psychoanalysis"]:checked')) {
+                        return;
+                    }
+
+                    selected.push({
+                        id: lensId,
+                        name: getLensName(lensId)
+                    });
+                });
+                return selected;
+            }
+
+            // --- UI UPDATE FUNCTIONS ---
+            function renderResults(userInput, results) {
+                analysisResultsContainer.innerHTML = '';
+                timestampEl.textContent = new Date().toLocaleString();
+
+                analysisResultsContainer.appendChild(createInputSummary(userInput));
+
+                if (results.analyses) {
+                    for (const lensId in results.analyses) {
+                        const lensResult = results.analyses[lensId];
+                        const analysisDiv = createAnalysisOutput(lensResult.name, lensResult.content);
+                        analysisResultsContainer.appendChild(analysisDiv);
+                    }
+                }
+                if (results.synthesis) {
+                    const synthesisDiv = createIntegrativeSynthesis(results.synthesis);
+                    analysisResultsContainer.appendChild(synthesisDiv);
+                }
+
+                resultsSection.classList.add('active');
+                resultsSection.scrollIntoView({ behavior: 'smooth' });
+            }
+
+            function updateLensStyleAndState(checkbox) {
+                const lensItem = checkbox.closest('.lens-item');
+                lensItem.classList.toggle('selected', checkbox.checked);
+
+                if (lensItem.dataset.hasSublenses === 'true') {
+                    const sublensContainer = document.getElementById(lensItem.dataset.lens + '-sublenses');
+                    const arrow = document.getElementById(lensItem.dataset.lens + '-arrow');
+                    if (sublensContainer) {
+                        sublensContainer.classList.toggle('active', checkbox.checked);
+                        arrow.classList.toggle('open', checkbox.checked);
+                    }
+                }
+
+                if (lensItem.dataset.parent) {
+                    updateParentLensState(lensItem.dataset.parent);
+                }
+            }
+
+            function updateParentLensState(parentLensId) {
+                const parentCheckbox = document.getElementById(parentLensId);
+                if (!parentCheckbox) return;
+
+                const isAnySublensChecked = !!document.querySelector(`[data-parent="${parentLensId}"] .lens-checkbox:checked`);
+                if (isAnySublensChecked && parentCheckbox.checked) {
+                    parentCheckbox.checked = false;
+                    parentCheckbox.closest('.lens-item').classList.remove('selected');
+                }
+            }
+            
+            function showLoading() {
+                loadingOverlay.classList.add('active');
+                analyzeBtn.disabled = true;
+                analyzeBtn.classList.add('loading');
+            }
+
+            function hideLoading() {
+                loadingOverlay.classList.remove('active');
+                analyzeBtn.disabled = false;
+                analyzeBtn.classList.remove('loading');
+            }
+
+            function showError(message) {
+                analysisResultsContainer.innerHTML = '';
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message';
+                errorDiv.textContent = message;
+                analysisResultsContainer.appendChild(errorDiv);
+                resultsSection.classList.add('active');
+            }
+
+            // --- UTILITY & HELPER FUNCTIONS ---
+            function createInputSummary(userInput) {
+                const div = document.createElement('div');
+                div.className = 'analysis-output';
+                div.innerHTML = `
+                    <h2 class="analysis-title">Input Summary</h2>
+                    <div class="analysis-content">
+                        <p>${userInput.substring(0, 300)}${userInput.length > 300 ? '...' : ''}</p>
+                        <p><em>Total length: ${userInput.length} characters</em></p>
+                    </div>`;
+                return div;
+            }
+
+            function createAnalysisOutput(lensName, analysisContent) {
+                const div = document.createElement('div');
+                div.className = 'analysis-output';
+                div.innerHTML = `
+                    <h2 class="analysis-title">Analysis: ${lensName}</h2>
+                    <div class="analysis-content">${analysisContent}</div>`;
+                return div;
+            }
+
+            function createIntegrativeSynthesis(synthesisContent) {
+                const div = document.createElement('div');
+                div.className = 'analysis-output';
+                div.innerHTML = `
+                    <h2 class="analysis-title">Integrative Synthesis</h2>
+                    <div class="analysis-content">${synthesisContent}</div>`;
+                return div;
+            }
+
+            function getLensName(lensId) {
+                const label = document.querySelector(`label[for="${lensId}"]`);
+                return label ? label.textContent.replace(/▼/g, '').trim() : lensId;
+            }
+
+            function setupTooltips() {
+                document.querySelectorAll('.lens-info').forEach(icon => {
+                    icon.addEventListener('mouseenter', e => {
+                        tooltip.textContent = icon.getAttribute('title');
+                        tooltip.style.display = 'block';
+                        positionTooltip(e);
+                    });
+                    icon.addEventListener('mousemove', positionTooltip);
+                    icon.addEventListener('mouseleave', () => {
+                        tooltip.style.display = 'none';
+                    });
+                });
+            }
+
+            function positionTooltip(e) {
+                const xOffset = 15;
+                const yOffset = 15;
+                let x = e.pageX + xOffset;
+                let y = e.pageY + yOffset;
+                
+                tooltip.style.left = `${x}px`;
+                tooltip.style.top = `${y}px`;
+
+                const rect = tooltip.getBoundingClientRect();
+                if (rect.right > window.innerWidth) {
+                    tooltip.style.left = `${e.pageX - rect.width - xOffset}px`;
+                }
+                if (rect.bottom > window.innerHeight) {
+                    tooltip.style.top = `${e.pageY - rect.height - yOffset}px`;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

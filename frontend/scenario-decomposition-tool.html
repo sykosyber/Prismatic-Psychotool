@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scenario Decomposition Tool</title>
+    <style>
+        /* Using a similar style to the Psychotool for consistency */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+        header { text-align: center; margin-bottom: 40px; }
+        h1 {
+            font-size: 2.2em;
+            font-weight: 300;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+        }
+        .phase {
+            display: none; /* All phases are hidden by default */
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+        .phase.active {
+            display: block; /* The current phase is made visible */
+        }
+        h2 { color: #999; margin-bottom: 20px; font-weight: 400; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .prompt-label { display: block; margin-bottom: 15px; color: #ccc; font-size: 1.1em; }
+        .prompt-desc { font-size: 0.9em; color: #666; margin-bottom: 15px; }
+        input[type="text"], textarea {
+            width: 100%;
+            background: #1a1a1a;
+            border: 1px solid #444;
+            border-radius: 5px;
+            padding: 12px;
+            color: #e0e0e0;
+            font-size: 1em;
+            font-family: inherit;
+            margin-bottom: 20px;
+        }
+        textarea { min-height: 120px; resize: vertical; }
+        .btn-nav-group { display: flex; justify-content: space-between; margin-top: 20px; }
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1em;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3); }
+        .btn-secondary { background: #333; }
+        .agent-form { border: 1px dashed #444; padding: 20px; border-radius: 5px; margin-bottom: 20px; position: relative; }
+        .btn-remove-agent { position: absolute; top: 10px; right: 10px; background: #555; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; font-weight: bold; }
+        #finalPromptOutput { background: #1a1a1a; border: 1px solid #667eea; white-space: pre-wrap; word-wrap: break-word; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Scenario Decomposition Tool</h1>
+            <p class="subtitle">Interactive Deconstruction of Actualizations</p>
+        </header>
+
+        <div id="phase-1" class="phase active">
+            <h2>Phase 1: Initial Scenario Input</h2>
+            <label class="prompt-label" for="scenario-overview">Please describe the core scenario you wish to decompose.</label>
+            <p class="prompt-desc">Example: "A person is going to the store," or "A team is struggling with a project deadline."</p>
+            <textarea id="scenario-overview"></textarea>
+            <div class="btn-nav-group">
+                <button class="btn" onclick="startDecomposition()">Start Decomposition &rarr;</button>
+            </div>
+        </div>
+
+        <div id="phase-2" class="phase">
+            <h2>Phase 2: Agent Identification</h2>
+            <p class="prompt-desc">Identify the key 'Agents' in this scenario. These are any active individuals, groups, or even AI entities whose 'will' drives action.</p>
+            <div id="agent-forms-container"></div>
+            <button class="btn btn-secondary" onclick="addAgent()">+ Add Agent</button>
+            <div class="btn-nav-group">
+                <button class="btn btn-secondary" onclick="goToPhase(1)">&larr; Back</button>
+                <button class="btn" onclick="goToPhase(3)">Next: Environment &rarr;</button>
+            </div>
+        </div>
+
+        <div id="phase-3" class="phase">
+            <h2>Phase 3: Environment Elaboration</h2>
+            <p class="prompt-desc">Detail the 'Environment'—the contextual configurations where this scenario is Actualized.</p>
+            <label class="prompt-label" for="env-physical">Physical Setting</label>
+            <input type="text" id="env-physical" placeholder="e.g., 'a large supermarket on a Tuesday afternoon'">
+            <label class="prompt-label" for="env-rules">Rules, Norms, or 'Systemic Grammars'</label>
+            <input type="text" id="env-rules" placeholder="e.g., 'strict queuing rules,' 'self-checkout only'">
+            <label class="prompt-label" for="env-resources">Relevant Resources</label>
+            <input type="text" id="env-resources" placeholder="e.g., 'limited stock of an item,' 'only cash accepted'">
+            <label class="prompt-label" for="env-atmosphere">Atmosphere / Socio-cultural Context</label>
+            <input type="text" id="env-atmosphere" placeholder="e.g., 'busy and stressful,' 'friendly and relaxed'">
+            <label class="prompt-label" for="env-tech">Technologies or Tools</label>
+            <input type="text" id="env-tech" placeholder="e.g., 'automated self-checkout system,' 'mobile payment app'">
+            <div class="btn-nav-group">
+                <button class="btn btn-secondary" onclick="goToPhase(2)">&larr; Back</button>
+                <button class="btn" onclick="goToPhase(4)">Next: Dynamics &rarr;</button>
+            </div>
+        </div>
+
+        <div id="phase-4" class="phase">
+            <h2>Phase 4: Dynamics Clarification</h2>
+             <p class="prompt-desc">Detail the 'Dynamics'—the active processes, interactions, and transformations within this scenario.</p>
+            <label class="prompt-label" for="dyn-sequence">Sequence of Key Actions/Events</label>
+            <textarea id="dyn-sequence" placeholder="e.g., 'Person enters, navigates aisles, selects items, queues, pays, exits'"></textarea>
+            <label class="prompt-label" for="dyn-interactions">Interactions Between Agents & Environment</label>
+            <textarea id="dyn-interactions"></textarea>
+            <label class="prompt-label" for="dyn-conflicts">Conflicts, Challenges, or Unexpected Events</label>
+            <textarea id="dyn-conflicts"></textarea>
+            <label class="prompt-label" for="dyn-processes">Underlying Processes or Rules</label>
+            <textarea id="dyn-processes" placeholder="e.g., 'economic transaction protocol,' 'social etiquette for personal space'"></textarea>
+            <label class="prompt-label" for="dyn-outcome">Primary Outcome and its Effects</label>
+            <textarea id="dyn-outcome"></textarea>
+            <div class="btn-nav-group">
+                <button class="btn btn-secondary" onclick="goToPhase(3)">&larr; Back</button>
+                <button class="btn" onclick="generateComprehensivePrompt()">Generate Comprehensive Prompt</button>
+            </div>
+        </div>
+        
+        <div id="phase-5" class="phase">
+            <h2>Phase 5: Generated Comprehensive Prompt</h2>
+            <p class="prompt-desc">This is the structured output of your decomposition. It is now ready for in-depth analysis.</p>
+            <textarea id="finalPromptOutput" rows="20" readonly></textarea>
+            <div class="btn-nav-group">
+                <button class="btn btn-secondary" onclick="copyToClipboard()">Copy to Clipboard</button>
+                <button class="btn" onclick="sendToPsychotool()">Send to Syber Psychotool &rarr;</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // This object will store all the user's answers as they go.
+        let scenarioData = {
+            overview: '',
+            agents: [],
+            environment: {},
+            dynamics: {}
+        };
+
+        // --- Navigation and State Management ---
+
+        function startDecomposition() {
+            scenarioData.overview = document.getElementById('scenario-overview').value;
+            if (!scenarioData.overview.trim()) {
+                alert('Please provide a scenario overview to begin.');
+                return;
+            }
+            if (scenarioData.agents.length === 0) {
+                addAgent(); // Add the first agent form automatically
+            }
+            goToPhase(2);
+        }
+
+        function goToPhase(phaseNumber) {
+            // Before moving to the next phase, save the data from the current one.
+            saveCurrentPhaseData();
+
+            // Hide all phases
+            document.querySelectorAll('.phase').forEach(phase => phase.classList.remove('active'));
+            // Show the target phase
+            document.getElementById(`phase-${phaseNumber}`).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+        
+        function saveCurrentPhaseData() {
+            // Find which phase is currently active
+            const activePhase = document.querySelector('.phase.active');
+            if (!activePhase) return;
+
+            const phaseId = activePhase.id;
+            
+            if (phaseId === 'phase-2') {
+                scenarioData.agents = []; // Clear old agent data
+                document.querySelectorAll('.agent-form').forEach((form, index) => {
+                    scenarioData.agents.push({
+                        name: form.querySelector(`[data-field="name"]`).value,
+                        goal: form.querySelector(`[data-field="goal"]`).value,
+                        characteristics: form.querySelector(`[data-field="characteristics"]`).value,
+                        internalState: form.querySelector(`[data-field="internalState"]`).value,
+                        past: form.querySelector(`[data-field="past"]`).value,
+                    });
+                });
+            } else if (phaseId === 'phase-3') {
+                scenarioData.environment = {
+                    physical: document.getElementById('env-physical').value,
+                    rules: document.getElementById('env-rules').value,
+                    resources: document.getElementById('env-resources').value,
+                    atmosphere: document.getElementById('env-atmosphere').value,
+                    tech: document.getElementById('env-tech').value,
+                };
+            } else if (phaseId === 'phase-4') {
+                scenarioData.dynamics = {
+                    sequence: document.getElementById('dyn-sequence').value,
+                    interactions: document.getElementById('dyn-interactions').value,
+                    conflicts: document.getElementById('dyn-conflicts').value,
+                    processes: document.getElementById('dyn-processes').value,
+                    outcome: document.getElementById('dyn-outcome').value,
+                };
+            }
+        }
+
+        // --- Dynamic Agent Forms ---
+        
+        let agentCounter = 0;
+        function addAgent() {
+            agentCounter++;
+            const agentFormHtml = `
+                <div class="agent-form" id="agent-form-${agentCounter}">
+                    <button class="btn-remove-agent" onclick="removeAgent(${agentCounter})">&times;</button>
+                    <label class="prompt-label">Agent ${agentCounter}: Who are they?</label>
+                    <input type="text" data-field="name" placeholder="e.g., 'The shopper,' 'the cashier'">
+                    <label class="prompt-label">Primary Goal / Intention?</label>
+                    <input type="text" data-field="goal">
+                    <label class="prompt-label">Key Characteristics / Role?</label>
+                    <input type="text" data-field="characteristics" placeholder="e.g., 'hurried,' 'experienced employee'">
+                    <label class="prompt-label">Significant Internal States?</label>
+                    <input type="text" data-field="internalState" placeholder="e.g., emotions, thoughts, knowledge, drivers">
+                     <label class="prompt-label">Relevant Past Experiences / Relationships?</label>
+                    <input type="text" data-field="past">
+                </div>
+            `;
+            document.getElementById('agent-forms-container').insertAdjacentHTML('beforeend', agentFormHtml);
+        }
+
+        function removeAgent(id) {
+            document.getElementById(`agent-form-${id}`).remove();
+        }
+
+        // --- Final Prompt Generation ---
+
+        function generateComprehensivePrompt() {
+            // First, save the data from the final phase (Dynamics)
+            saveCurrentPhaseData();
+
+            let prompt = `[BEGIN SYBER_SCENARIO_DECOMPOSITION]\n\n`;
+            prompt += `**Scenario Overview:**\n${scenarioData.overview}\n\n`;
+
+            if (scenarioData.agents.length > 0) {
+                prompt += `**Agents:**\n`;
+                scenarioData.agents.forEach((agent, index) => {
+                    if (agent.name.trim()) { // Only include agents with names
+                        prompt += `- **Agent ${index + 1}: ${agent.name}**\n`;
+                        if (agent.goal) prompt += `    - **Goal:** ${agent.goal}\n`;
+                        if (agent.characteristics) prompt += `    - **Characteristics/Role:** ${agent.characteristics}\n`;
+                        if (agent.internalState) prompt += `    - **Internal States:** ${agent.internalState}\n`;
+                        if (agent.past) prompt += `    - **Relevant Past:** ${agent.past}\n`;
+                    }
+                });
+                prompt += `\n`;
+            }
+            
+            prompt += `**Environment:**\n`;
+            if (scenarioData.environment.physical) prompt += `- **Physical Setting:** ${scenarioData.environment.physical}\n`;
+            if (scenarioData.environment.rules) prompt += `- **Rules/Systemic Grammars:** ${scenarioData.environment.rules}\n`;
+            if (scenarioData.environment.resources) prompt += `- **Resources:** ${scenarioData.environment.resources}\n`;
+            if (scenarioData.environment.atmosphere) prompt += `- **Atmosphere:** ${scenarioData.environment.atmosphere}\n`;
+            if (scenarioData.environment.tech) prompt += `- **Technologies/Tools:** ${scenarioData.environment.tech}\n`;
+            prompt += `\n`;
+
+            prompt += `**Dynamics:**\n`;
+            if (scenarioData.dynamics.sequence) prompt += `- **Sequence of Events:** ${scenarioData.dynamics.sequence}\n`;
+            if (scenarioData.dynamics.interactions) prompt += `- **Interactions:** ${scenarioData.dynamics.interactions}\n`;
+            if (scenarioData.dynamics.conflicts) prompt += `- **Conflicts/Challenges:** ${scenarioData.dynamics.conflicts}\n`;
+            if (scenarioData.dynamics.processes) prompt += `- **Underlying Processes:** ${scenarioData.dynamics.processes}\n`;
+            if (scenarioData.dynamics.outcome) prompt += `- **Outcome:** ${scenarioData.dynamics.outcome}\n`;
+
+            prompt += `\n[END SYBER_SCENARIO_DECOMPOSITION]`;
+
+            document.getElementById('finalPromptOutput').value = prompt;
+            goToPhase(5);
+        }
+        
+        // --- Integration & Utility Functions ---
+
+        function copyToClipboard() {
+            const outputText = document.getElementById('finalPromptOutput');
+            outputText.select();
+            document.execCommand('copy');
+            alert('Prompt copied to clipboard!');
+        }
+
+        function sendToPsychotool() {
+            const promptText = document.getElementById('finalPromptOutput').value;
+            // Use localStorage to pass the data between pages
+            localStorage.setItem('psychotoolInput', promptText);
+            // Open the psychotool in a new tab
+            window.open('mdh-analysis-instrument.html', '_blank'); // Assumes it's in the same directory
+        }
+
+    </script>
+</body>
+</html>
