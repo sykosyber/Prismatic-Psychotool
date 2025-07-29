@@ -5,7 +5,7 @@
 
 A web-based instrument for multi-dimensional analysis of human behavior and psychology. This tool uses OpenAI's GPT-4o to process text through a variety of selectable academic and theoretical lenses, providing deep, structured insights.
 
-![Psychotool Screenshot](https://imgur.com/a/eCFDFDH.png)
+![Psychotool Screenshot]([img]https://i.imgur.com/oWhYlsz.png[/img])
 
 ## Features
 
@@ -45,7 +45,7 @@ Follow these steps to get the project running on your local machine.
     ```
 
 3.  **Create and Activate a Virtual Environment**
-    This keeps your project dependencies isolated.
+    
     ```bash
     # Create the environment
     python -m venv .venv
