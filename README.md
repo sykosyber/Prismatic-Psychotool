@@ -5,7 +5,7 @@
 
 A web-based instrument for multi-dimensional analysis of human behavior and psychology. This tool uses OpenAI's GPT-4o to process text through a variety of selectable academic and theoretical lenses, providing deep, structured insights.
 
-(![Psychotool Screenshot](https://i.imgur.com/oWhYlsz.png))
+![Psychotool Screenshot](https://i.imgur.com/oWhYlsz.png)
 
 ## Features
 
