@@ -82,7 +82,7 @@ Follow these steps to get the project running on your local machine.
     The backend server will start and be available at `http://127.0.0.1:5000`.
 
 2.  **Launch the Frontend**
-    Navigate to the `frontend` directory and open the `mdh-analysis-instrument.html` file directly in your web browser (e.g., by double-clicking it), or by selecting Open with 'Live Server' via the Ritwick Dey Live Server Extension.
+    Navigate to the `frontend` directory and open the `mdh-analysis-instrument.html` file directly in your web browser (e.g., by double-clicking it), or by selecting 'Open with Live Server' via the Ritwick Dey Live Server Extension.
 
 3.  **Run an Analysis**
     - Paste the text you want to analyze into the input box.
