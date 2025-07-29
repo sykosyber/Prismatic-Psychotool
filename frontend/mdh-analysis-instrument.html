@@ -695,7 +695,7 @@
                     return;
                 }
 
-                const includeIntegration = integrationCheckbox.checked;
+            
                 showLoading();
 
                 try {
@@ -705,7 +705,7 @@
                         body: JSON.stringify({
                             userInput: userInput,
                             selectedLenses: selectedLenses,
-                            includeIntegration: includeIntegration
+                            includeIntegration: false
                         })
                     });
 
